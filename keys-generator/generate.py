@@ -2,16 +2,17 @@ from hashlib import sha256
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from pwinput import pwinput
 
 RSA_KEY_SIZE = 4096
 
 
 def get_pin_from_user():
-    pin = input("Enter a PIN for private key: ")
+    pin = pwinput(prompt="Enter a PIN for private key: ")
 
-    while input("Confirm PIN: ") != pin:
+    while pwinput(prompt="Confirm PIN: ") != pin:
         print("PINs do not match. Please try again.")
-        pin = input("Enter a PIN for private key: ")
+        pin = pwinput(prompt="Enter a PIN for private key: ")
 
     return pin
 
@@ -31,6 +32,7 @@ with open("private-key.pem", "wb") as f:
         encryption_algorithm=serialization.BestAvailableEncryption(pin_hash),  # OpenSSL backend uses 'aes-256-cbc' as BestAvailableEncryption
     )
     f.write(pem)
+    print("Private key saved to private-key.pem")
 
 public_key = private_key.public_key()
 
@@ -41,3 +43,4 @@ with open("public-key.pem", "wb") as f:
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
     )
+    print("Public key saved to public-key.pem")

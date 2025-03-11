@@ -3,8 +3,9 @@ from hashlib import sha256
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
+from pwinput import pwinput
 
-pin = input("Enter PIN: ")
+pin = pwinput(prompt="Enter PIN: ")
 hashed_pin = sha256(pin.encode()).digest()
 
 message = b"Test message to sign"
