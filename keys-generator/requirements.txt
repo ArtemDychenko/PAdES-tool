@@ -1,0 +1,4 @@
+cffi==1.17.1
+cryptography==44.0.2
+pwinput==1.0.3
+pycparser==2.22
