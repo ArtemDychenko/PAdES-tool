@@ -1,57 +1,9 @@
 from PyQt6.uic import loadUi
-from PyQt6.QtWidgets import QMainWindow, QApplication, QTreeView, QFileDialog
-from PyQt6.QtGui import QTextCursor, QFileSystemModel
-from PyQt6.QtCore import QSortFilterProxyModel, Qt, QDir, QModelIndex
+from PyQt6.QtWidgets import QMainWindow, QApplication, QFileDialog
+from PyQt6.QtGui import QTextCursor
 
-import os
 import sys
 
-
-# class PdfFilterProxyModel(QSortFilterProxyModel):
-#     def __init__(self):
-#         super().__init__()
-#
-#     def filterAcceptsRow(self, source_row, source_parent):
-#         """
-#                 Returns true if the item in the row indicated by the given source_row
-#                 and source_parent should be included in the model; otherwise returns false.
-#
-#                 Parameters:
-#                     source_row – int
-#                     source_parent – PySide2.QtCore.QModelIndex
-#
-#                 Returns:
-#                     bool: True if the item should be included in the model, False otherwise.
-#                 """
-#         model = self.sourceModel()
-#         index = model.index(source_row, 0, source_parent)
-#
-#         if model.isDir(index):
-#             directory_path = model.filePath(index)
-#             return self.contains_pdf(directory_path)
-#         else:
-#             return model.filePath(index).lower().endswith(".pdf")
-#
-#     def contains_pdf(self, directory_path):
-#         """
-#                 Returns true if the directory contains pdf file; otherwise returns false.
-#
-#                 Parameters:
-#                     directory_path -`str`
-#
-#                 Returns:
-#                     bool: True if there is pdf file, False otherwise.
-#                 """
-#         iterator = QDir(directory_path).entryInfoList(
-#             filters=QDir.Filter.Files | QDir.Filter.AllDirs | QDir.Filter.NoDotAndDotDot,
-#             sort=QDir.SortFlag.Name,
-#         )
-#         for entity in iterator:
-#             if entity.isDir():
-#                 if self.contains_pdf(entity.filePath()): return True
-#             elif entity.suffix().lower() == "pdf":
-#                 return True
-#         return False
 
 
 class MainIU(QMainWindow):
@@ -65,8 +17,9 @@ class MainIU(QMainWindow):
         self.verificationButton.clicked.connect(self.verify_click_handler)
 
         ##implementation of actions in menu
-        self.actionChoose_file.triggered.connect(self.action_choose_file_handler)
+        self.actionChoose_pdf_file.triggered.connect(self.action_choose_pdf_file_handler)
         self.actionexit.triggered.connect(self.close)
+        self.actionChoose_public_key.triggered.connect(self.action_choose_public_key_handler)
 
     def sign_click_handler(self):
         self.add_log("PDF has been signed")
@@ -75,7 +28,6 @@ class MainIU(QMainWindow):
     def verify_click_handler(self):
         self.add_log("PDF has been verified")
 
-
     def add_log(self, message):
         self.textBrowser.append(message)
         cursor = self.textBrowser.textCursor()
@@ -83,12 +35,19 @@ class MainIU(QMainWindow):
         self.textBrowser.setTextCursor(cursor)
         self.textBrowser.ensureCursorVisible()
 
+    def action_choose_pdf_file_handler(self):
+        self.choose_file("PDF files(*.pdf)")
 
-    def action_choose_file_handler(self):
+    def action_choose_public_key_handler(self):
+        self.choose_file("Public key files(*.pem)")
+
+
+    def choose_file(self, nameFilter):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Open File")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
+        file_dialog.setNameFilter(nameFilter)
 
         if file_dialog.exec():
             selected_files = file_dialog.selectedFiles()
