@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTextBrowser" name="textBrowser">
+   <widget class="QTextBrowser" name="text_browser">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -46,7 +46,7 @@ p, li { white-space: pre-wrap; }
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="signButton">
+   <widget class="QPushButton" name="sign_button">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -65,7 +65,7 @@ p, li { white-space: pre-wrap; }
      <string>Sign a pdf document</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="verificationButton">
+   <widget class="QPushButton" name="verification_button">
     <property name="geometry">
      <rect>
       <x>450</x>
@@ -98,26 +98,26 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionChoose_pdf_file"/>
+    <addaction name="action_choose_pdf_file"/>
     <addaction name="separator"/>
-    <addaction name="actionChoose_public_key"/>
+    <addaction name="action_choose_public_key"/>
     <addaction name="separator"/>
-    <addaction name="actionexit"/>
+    <addaction name="action_exit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionChoose_pdf_file">
+  <action name="action_choose_pdf_file">
    <property name="text">
     <string>Choose pdf file</string>
    </property>
   </action>
-  <action name="actionexit">
+  <action name="action_exit">
    <property name="text">
     <string>Close</string>
    </property>
   </action>
-  <action name="actionChoose_public_key">
+  <action name="action_choose_public_key">
    <property name="text">
     <string>Choose public key</string>
    </property>
