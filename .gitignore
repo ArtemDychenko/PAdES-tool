@@ -5,3 +5,5 @@
 **/.mypy_cache/
 **/.vscode/
 **/.idea/
+
+**/.ruff_cache

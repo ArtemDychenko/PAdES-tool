@@ -13,7 +13,12 @@ class PDFSigner:
             with open(pdf_file_path, "rb") as f:
                 pdf_content = f.read()
             signature = self._private_key.sign(
-                pdf_content, padding.PKCS1v15(), hashes.SHA256()
+                pdf_content,
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
+                hashes.SHA256()
             )
             return signature
         except FileNotFoundError:

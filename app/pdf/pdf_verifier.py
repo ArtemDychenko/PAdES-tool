@@ -21,7 +21,10 @@ class PDFVerifier:
             self._public_key.verify(
                 signature,
                 pdf_content,
-                padding.PKCS1v15(),
+                padding.PSS(
+                    mgf=padding.MGF1(hashes.SHA256()),
+                    salt_length=padding.PSS.MAX_LENGTH,
+                ),
                 hashes.SHA256(),
             )
             return True
