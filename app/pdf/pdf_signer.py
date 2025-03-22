@@ -1,4 +1,3 @@
-from hashlib import sha256
 from typing import Optional
 
 from cryptography.hazmat.primitives import hashes
@@ -13,9 +12,8 @@ class PDFSigner:
         try:
             with open(pdf_file_path, "rb") as f:
                 pdf_content = f.read()
-                digest = sha256(pdf_content).digest()
             signature = self._private_key.sign(
-                digest, padding.PKCS1v15(), hashes.SHA256()
+                pdf_content, padding.PKCS1v15(), hashes.SHA256()
             )
             return signature
         except FileNotFoundError:
