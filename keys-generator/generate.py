@@ -29,7 +29,9 @@ with open("private-key.pem", "wb") as f:
     pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.TraditionalOpenSSL,
-        encryption_algorithm=serialization.BestAvailableEncryption(pin_hash),  # OpenSSL backend uses 'aes-256-cbc' as BestAvailableEncryption
+        encryption_algorithm=serialization.BestAvailableEncryption(
+            pin_hash
+        ),  # OpenSSL backend uses 'aes-256-cbc' as BestAvailableEncryption
     )
     f.write(pem)
     print("Private key saved to private-key.pem")
