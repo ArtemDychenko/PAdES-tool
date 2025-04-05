@@ -16,7 +16,7 @@ class PenDriveFinder:
             None - If no partition with a `.pem` file is found.
         """
         for partition in psutil.disk_partitions():
-            if partition.fstype.lower() in ["vfat", "exfat", "ntfs", "fat32"]:
+            if partition.fstype.lower() in ["hfs", "apfs", "vfat", "exfat", "ntfs", "fat32"]:
                 for entry in os.scandir(partition.mountpoint):
                     if entry.name.endswith(".pem") and entry.is_file():
                         return partition.mountpoint
