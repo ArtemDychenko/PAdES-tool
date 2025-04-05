@@ -22,7 +22,7 @@ class PenDriveFinder:
                         return partition.mountpoint
 
 
-    def get_private_key_path(self, pendrive_path) -> Optional[str]:
+    def get_private_key_path(self, pendrive_path: str) -> Optional[str]:
         """
         Searches the specified pen drive (mount point) for a private key (*.pem) file.
         :param pen drive_path: str - The mount point of the pen drive to scan.
