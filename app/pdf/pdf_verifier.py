@@ -11,9 +11,9 @@ class PDFVerifier:
     def __init__(self, public_key: rsa.RSAPublicKey):
         self._public_key = public_key
 
-    def verify(self, pdf_path: str) -> bool:
-        size_in_bytes = os.path.getsize(pdf_path)
-        with open(pdf_path, "rb") as f:
+    def verify(self, pdf_file_path: str) -> bool:
+        size_in_bytes = os.path.getsize(pdf_file_path)
+        with open(pdf_file_path, "rb") as f:
             pdf_content = f.read(size_in_bytes - SIGNATURE_SIZE_IN_BYTES)
             signature = f.read()
 
