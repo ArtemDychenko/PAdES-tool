@@ -1,5 +1,3 @@
-from .pendrive_detector import KeyFinder
+from .pendrive_detector import PenDriveFinder
 
-__all__ = [
-    "KeyFinder"
-]
+__all__ = ["PenDriveFinder"]

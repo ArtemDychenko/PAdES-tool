@@ -1,5 +1,8 @@
 import sys
-from pendrive_detection import KeyFinder
+
+from PyQt6.QtCore import QTimer
+
+from pendrive_detection import PenDriveFinder
 from typing import Optional
 
 from PyQt6.QtGui import QTextCursor
@@ -7,11 +10,10 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt6.uic import loadUi
 
 
-
 class MainIU(QMainWindow):
     def __init__(self):
         super(MainIU, self).__init__()
-        self.detector = KeyFinder()
+        self.detector = PenDriveFinder()
         loadUi("design.ui", self)
 
         # implementation of buttons
@@ -26,8 +28,11 @@ class MainIU(QMainWindow):
         self.action_choose_public_key.triggered.connect(
             self.action_choose_public_key_handler
         )
-        self.find_private_key_in_pendrive()
 
+        # implementation of pendrive detection
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.find_private_key_path)
+        self.timer.start(3000)
 
 
     def sign_click_handler(self) -> None:
@@ -49,8 +54,14 @@ class MainIU(QMainWindow):
     def action_choose_public_key_handler(self) -> None:
         self.add_log(self.choose_file("Public key files(*.pem)"))
 
-    def find_private_key_in_pendrive(self) -> None:
-        self.add_log(self.detector.find_private_key_path())
+    def find_private_key_path(self) -> None:
+        pendrive = self.detector.find_pendrive_with_private_key()
+        if pendrive == None:
+            self.add_log("Pendrive has not been found")
+
+        if pendrive != None:
+            self.add_log("Pendrive has been found")
+            print(self.detector.get_private_key_path(pendrive))
 
     def choose_file(self, name_filter: str) -> Optional[str]:
         file_dialog = QFileDialog(self)
@@ -71,8 +82,5 @@ if __name__ == "__main__":
 
     # example of status bar
     ui.add_log("Uruchomiono aplikację...")
-    ui.add_log("Start detecting pendrive...")
-    ui.add_log("Pendrive detected!")
-
 
     app.exec()

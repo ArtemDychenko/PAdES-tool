@@ -3,47 +3,33 @@ from typing import Optional
 import psutil
 
 
-class KeyFinder:
+class PenDriveFinder:
+    """
+    A utility class to detect pen drives and locate private key files (*.pem) stored on them.
+    """
 
-    def find_private_key_path(self) -> Optional[str]:
+    def find_pendrive_with_private_key(self) -> Optional[str]:
+        """
+        Scans all connected and mounted drives to detect a pen drive containing a private key (*.pem) file.
+        :return:
+            str - Mount point of the partition containing the `.pem` private key file, or
+            None - If no partition with a `.pem` file is found.
+        """
         for partition in psutil.disk_partitions():
             if partition.fstype.lower() in ["vfat", "exfat", "ntfs", "fat32"]:
                 for entry in os.scandir(partition.mountpoint):
-                    if entry.name.endswith('.pem') and entry.is_file():
-                        return entry.path
+                    if entry.name.endswith(".pem") and entry.is_file():
+                        return partition.mountpoint
 
 
-
-
-# class find_class(object):
-#     def __init__(self, class_):
-#         self._class = class_
-#     def __call__(self, device):
-#         # first, let's check the device
-#         if device.bDeviceClass == self._class:
-#             return True
-#         # ok, transverse all devices to find an
-#         # interface that matches our class
-#         for cfg in device:
-#             # find_descriptor: what's it?
-#             intf = usb.util.find_descriptor(
-#                                         cfg,
-#                                         bInterfaceClass=self._class
-#                                 )
-#             if intf is not None:
-#                 return True
-#         return False
-
-
-
-# if __name__ == "__main__":
-#     # pendrives = usb.core.find(find_all=1, custom_match=find_class(8))
-#     #
-#     # for pendrive in pendrives:
-#     #     # print(pendrive)
-#     find_usb_device_path()
-
-
-
-
-
+    def get_private_key_path(self, pendrive_path) -> Optional[str]:
+        """
+        Searches the specified pen drive (mount point) for a private key (*.pem) file.
+        :param pen drive_path: str - The mount point of the pen drive to scan.
+        :return:
+            str - Full path to the `.pem` private key file if found, or
+            None - If no `.pem` file is found on the provided pen drive path.
+        """
+        for entry in os.scandir(pendrive_path):
+            if entry.name.endswith(".pem") and entry.is_file():
+                return entry.path
