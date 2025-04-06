@@ -57,16 +57,16 @@ class MainIU(QMainWindow):
     def find_private_key_path(self) -> None:
         pen_drives = self.detector.find_all_pen_drives()
 
-        if pen_drives != None:
+        if pen_drives is not None:
             self.add_log("Pendrive has been detected")
             for pen_drive in pen_drives:
                 self.add_log(pen_drive)
             pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
 
-            if pen_drive == None:
+            if pen_drive is None:
                 self.add_log("Private key has not been found")
 
-            if pen_drive != None:
+            if pen_drive is not None:
                 self.add_log("Private key has been found")
                 print(self.detector.get_private_key_path(pen_drive))
 
@@ -90,8 +90,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui = MainIU()
     ui.show()
-
-    # example of status bar
-    ui.add_log("Uruchomiono aplikację...")
-
     app.exec()

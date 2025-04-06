@@ -15,9 +15,9 @@ class PenDriveFinder:
     A utility class to detect pen drives and locate private key files (*.pem) stored
     on them on various operating systems(Windows, Linux, macOS).
     """
+
     def __init__(self):
         self.wmi_client = None
-
 
     @staticmethod
     def check_os() -> str:
@@ -41,9 +41,10 @@ class PenDriveFinder:
         elif self.check_os() == "win32":
             return self.find_all_pen_drives_win()
         elif self.check_os() == "darwin":
-            pass #TODO implement macos function
+            pass  # TODO implement macos function
 
-    def find_all_pen_drives_linux(self) -> Optional[list]:
+    @staticmethod
+    def find_all_pen_drives_linux() -> Optional[list]:
         """
         Scans all connected and mounted drives to detect all pen drives on Linux systems.
 
@@ -62,13 +63,14 @@ class PenDriveFinder:
                 if mount_point:
                     pen_drives.append(mount_point)
                 else:
-                    for part in context.list_devices(subsystem="block", DEVTYPE="partition", parent=device):
+                    for part in context.list_devices(
+                        subsystem="block", DEVTYPE="partition", parent=device
+                    ):
                         mount_point = partition_mounts.get(part.device_node)
                         if mount_point:
                             pen_drives.append(mount_point)
 
         return pen_drives if pen_drives else None
-
 
     def find_all_pen_drives_win(self) -> Optional[list]:
         """
@@ -86,12 +88,15 @@ class PenDriveFinder:
         for drive in self.wmi_client.Win32_DiskDrive():
             if drive.InterfaceType == "USB":
                 for partition in drive.associators("Win32_DiskDriveToDiskPartition"):
-                    for logical_disk in partition.associators("Win32_LogicalDiskToPartition"):
+                    for logical_disk in partition.associators(
+                        "Win32_LogicalDiskToPartition"
+                    ):
                         pen_drives.append(logical_disk.DeviceID)
 
         return pen_drives if pen_drives else None
 
-    def find_pen_drive_with_private_key(self, pen_drives: list) -> Optional[str]:
+    @staticmethod
+    def find_pen_drive_with_private_key(pen_drives: list) -> Optional[str]:
         """
         Scans all connected and mounted drives to detect a pen drive containing a private key (*.pem) file.
         :param:
@@ -106,8 +111,8 @@ class PenDriveFinder:
                     return pen_drive
         return None
 
-
-    def get_private_key_path(self, pen_drive_path: str) -> Optional[str]:
+    @staticmethod
+    def get_private_key_path(pen_drive_path: str) -> Optional[str]:
         """
         Searches the specified pen drive (mount point) for a private key (*.pem) file.
         :param pen_drive_path: str - The mount point of the pen drive to scan.
@@ -118,5 +123,3 @@ class PenDriveFinder:
         for entry in os.scandir(pen_drive_path):
             if entry.name.endswith(".pem") and entry.is_file():
                 return entry.path
-
-
