@@ -1,13 +1,12 @@
 import sys
-
-from PyQt6.QtCore import QTimer
-
-from pendrive_detection import PenDriveFinder
 from typing import Optional
 
+from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QTextCursor
 from PyQt6.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt6.uic import loadUi
+
+from pendrive_detection import PenDriveFinder
 
 
 class MainIU(QMainWindow):
@@ -34,7 +33,6 @@ class MainIU(QMainWindow):
         self.timer.timeout.connect(self.find_private_key_path)
         self.timer.start(3000)
 
-
     def sign_click_handler(self) -> None:
         self.add_log("PDF has been signed")
 
@@ -55,24 +53,35 @@ class MainIU(QMainWindow):
         self.add_log(self.choose_file("Public key files(*.pem)"))
 
     def find_private_key_path(self) -> None:
-        pendrive = self.detector.find_pendrive_with_private_key()
-        if pendrive == None:
-            self.add_log("Pendrive has not been found")
+        pen_drives = self.detector.find_all_pen_drives()
 
-        if pendrive != None:
-            self.add_log("Pendrive has been found")
-            print(self.detector.get_private_key_path(pendrive))
+        if pen_drives != None:
+            self.add_log("Pendrive has been detected")
+            for pen_drive in pen_drives:
+                self.add_log(pen_drive)
+            pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
 
-    def choose_file(self, name_filter: str) -> Optional[str]:
-        file_dialog = QFileDialog(self)
-        file_dialog.setWindowTitle("Choose File")
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
-        file_dialog.setNameFilter(name_filter)
+            if pen_drive == None:
+                self.add_log("Private key has not been found")
 
-        if file_dialog.exec():
-            selected_files = file_dialog.selectedFiles()
-            return selected_files[0]
+            if pen_drive != None:
+                self.add_log("Private key has been found")
+                print(self.detector.get_private_key_path(pen_drive))
+
+        else:
+            print("Pendrive has not been detected")
+
+
+def choose_file(self, name_filter: str) -> Optional[str]:
+    file_dialog = QFileDialog(self)
+    file_dialog.setWindowTitle("Choose File")
+    file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+    file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
+    file_dialog.setNameFilter(name_filter)
+
+    if file_dialog.exec():
+        selected_files = file_dialog.selectedFiles()
+        return selected_files[0]
 
 
 if __name__ == "__main__":
