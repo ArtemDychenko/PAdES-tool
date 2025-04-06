@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import Optional
 
@@ -13,7 +14,8 @@ class MainIU(QMainWindow):
     def __init__(self):
         super(MainIU, self).__init__()
         self.detector = PenDriveFinder()
-        loadUi("design.ui", self)
+        ui_path = os.path.join(os.path.dirname(__file__), "design.ui")
+        loadUi(ui_path, self)
 
         # implementation of buttons
         self.sign_button.clicked.connect(self.sign_click_handler)
@@ -69,7 +71,7 @@ class MainIU(QMainWindow):
                 print(self.detector.get_private_key_path(pen_drive))
 
         else:
-            print("Pendrive has not been detected")
+            self.add_log("Pendrive has not been detected")
 
 
 def choose_file(self, name_filter: str) -> Optional[str]:
