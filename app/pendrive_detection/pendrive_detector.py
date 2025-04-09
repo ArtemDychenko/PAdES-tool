@@ -1,10 +1,10 @@
 import os
 import sys
 from typing import Optional
-import psutil
 
 if sys.platform == "linux":
     import pyudev
+    import psutil
 
 if sys.platform == "win32":
     import wmi
@@ -17,7 +17,7 @@ class PenDriveFinder:
     """
 
     def __init__(self):
-        self.wmi_client = None
+        self._wmi_client = None
 
     @staticmethod
     def check_os() -> str:
@@ -37,14 +37,14 @@ class PenDriveFinder:
             None - if no pen drives are detected.
         """
         if self.check_os() == "linux":
-            return self.find_all_pen_drives_linux()
+            return self.__find_all_pen_drives_linux()
         elif self.check_os() == "win32":
-            return self.find_all_pen_drives_win()
+            return self.__find_all_pen_drives_win()
         elif self.check_os() == "darwin":
             pass  # TODO implement macos function
 
     @staticmethod
-    def find_all_pen_drives_linux() -> Optional[list]:
+    def __find_all_pen_drives_linux() -> Optional[list]:
         """
         Scans all connected and mounted drives to detect all pen drives on Linux systems.
 
@@ -72,7 +72,7 @@ class PenDriveFinder:
 
         return pen_drives if pen_drives else None
 
-    def find_all_pen_drives_win(self) -> Optional[list]:
+    def __find_all_pen_drives_win(self) -> Optional[list]:
         """
         Scans all connected and mounted drives to detect all pen drives on Windows systems.
 
@@ -80,12 +80,12 @@ class PenDriveFinder:
             list - A list of detected pen drive mount points (partitions or whole drives).
             None - if no pen drives are detected.
         """
-        if self.wmi_client is None:
-            self.wmi_client = wmi.WMI()
+        if self._wmi_client is None:
+            self._wmi_client = wmi.WMI()
 
         pen_drives = []
 
-        for drive in self.wmi_client.Win32_DiskDrive():
+        for drive in self._wmi_client.Win32_DiskDrive():
             if drive.InterfaceType == "USB":
                 for partition in drive.associators("Win32_DiskDriveToDiskPartition"):
                     for logical_disk in partition.associators(
@@ -96,7 +96,7 @@ class PenDriveFinder:
         return pen_drives if pen_drives else None
 
     @staticmethod
-    def find_pen_drive_with_private_key(pen_drives: list) -> Optional[str]:
+    def find_pen_drive_with_private_key(pen_drives: list[str]) -> Optional[str]:
         """
         Scans all connected and mounted drives to detect a pen drive containing a private key (*.pem) file.
         :param:
