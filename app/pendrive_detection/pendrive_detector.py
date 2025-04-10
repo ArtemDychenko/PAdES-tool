@@ -19,38 +19,29 @@ class PenDriveFinder:
     def __init__(self):
         self._wmi_client = None
 
-    @staticmethod
-    def check_os() -> str:
-        """
-        Determines the current operating system (Linux, Windows, macOS)
-        :return:
-            str - A str of detected operating system, e.g. "linux", "win32", "darwin"
-        """
-        return sys.platform
-
-    def find_all_pen_drives(self) -> Optional[list]:
+    def find_all_pen_drives(self) -> list[str]:
         """
         Detects and lists all connected pen drives across different operating systems (Linux, Windows, macOS).
         It determines the current operating system and delegates the task to an OS-specific function.
         :return:
             list - A list of detected pen drive mount points (partitions or whole drives).
-            None - if no pen drives are detected.
+            An empty list is returned if no pen drives are detected.
         """
-        if self.check_os() == "linux":
+        if sys.platform == "linux":
             return self.__find_all_pen_drives_linux()
-        elif self.check_os() == "win32":
+        elif sys.platform == "win32":
             return self.__find_all_pen_drives_win()
-        elif self.check_os() == "darwin":
+        elif sys.platform == "darwin":
             pass  # TODO implement macos function
+        return []
 
     @staticmethod
-    def __find_all_pen_drives_linux() -> Optional[list]:
+    def __find_all_pen_drives_linux() -> list[str]:
         """
         Scans all connected and mounted drives to detect all pen drives on Linux systems.
-
         :return:
             list - A list of detected pen drive mount points (partitions or whole drives).
-            None - if no pen drives are detected.
+            An empty list is returned if no pen drives are detected.
         """
         context = pyudev.Context()
         pen_drives = []
@@ -70,15 +61,14 @@ class PenDriveFinder:
                         if mount_point:
                             pen_drives.append(mount_point)
 
-        return pen_drives if pen_drives else None
+        return pen_drives
 
-    def __find_all_pen_drives_win(self) -> Optional[list]:
+    def __find_all_pen_drives_win(self) -> list[str]:
         """
         Scans all connected and mounted drives to detect all pen drives on Windows systems.
-
         :return:
             list - A list of detected pen drive mount points (partitions or whole drives).
-            None - if no pen drives are detected.
+            An empty list is returned if no pen drives are detected.
         """
         if self._wmi_client is None:
             self._wmi_client = wmi.WMI()
@@ -93,7 +83,7 @@ class PenDriveFinder:
                     ):
                         pen_drives.append(logical_disk.DeviceID)
 
-        return pen_drives if pen_drives else None
+        return pen_drives
 
     @staticmethod
     def find_pen_drive_with_private_key(pen_drives: list[str]) -> Optional[str]:

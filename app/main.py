@@ -57,10 +57,11 @@ class MainIU(QMainWindow):
     def find_private_key_path(self) -> None:
         pen_drives = self.detector.find_all_pen_drives()
 
-        if pen_drives is not None:
-            self.add_log("Pendrive has been detected")
+        if len(pen_drives) != 0:
+            self.add_log("Pendrive has been found")
             for pen_drive in pen_drives:
                 self.add_log(pen_drive)
+
             pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
 
             if pen_drive is None:
@@ -70,8 +71,7 @@ class MainIU(QMainWindow):
                 self.add_log("Private key has been found")
                 print(self.detector.get_private_key_path(pen_drive))
 
-        else:
-            self.add_log("Pendrive has not been detected")
+
 
 
 def choose_file(self, name_filter: str) -> Optional[str]:
