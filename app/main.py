@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.uic import loadUi
 
-from app.keys_loading import PrivateKey, PublicKey, PasswordDialog
+from keys_loading import PrivateKey, PublicKey, PasswordDialog
 from pendrive_detection import PenDriveFinder
 
 
