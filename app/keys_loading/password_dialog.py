@@ -6,14 +6,15 @@ from PyQt6.QtWidgets import (
     QDialogButtonBox,
     QLabel,
     QLineEdit,
-    QGridLayout,
     QVBoxLayout,
-    QWidget,
-    QApplication,
 )
 
 
 class PasswordDialog(QDialog):
+    """
+    A class for managing the password dialog.
+    It displays a message and a password input field.
+    """
     def __init__(self):
         super().__init__()
 
@@ -42,4 +43,7 @@ class PasswordDialog(QDialog):
         self.setLayout(layout)
 
     def get_password(self):
+        """
+        Returns the password entered by the user.
+        """
         return self.input.text()
