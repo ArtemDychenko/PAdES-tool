@@ -42,7 +42,8 @@ class PasswordDialog(QDialog):
         layout.addWidget(self.buttonBox, alignment=Qt.AlignmentFlag.AlignCenter)
         self.setLayout(layout)
 
-    def get_password(self):
+    @property
+    def password(self):
         """
         Returns the password entered by the user.
         """

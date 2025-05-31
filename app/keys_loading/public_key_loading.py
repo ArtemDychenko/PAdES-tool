@@ -27,5 +27,6 @@ class PublicKey(metaclass=SingletonMeta):
             except ValueError:
                 print("Wrong file")
 
-    def get_public_key(self) -> Optional[rsa.RSAPublicKey]:
+    @property
+    def value(self) -> Optional[rsa.RSAPublicKey]:
         return self.__public_key

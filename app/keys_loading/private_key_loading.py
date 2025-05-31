@@ -33,7 +33,8 @@ class PrivateKey(metaclass=SingletonMeta):
             except ValueError:
                 print("Invalid password")
 
-    def get_private_key(self) -> Optional[rsa.RSAPrivateKey]:
+    @property
+    def value(self) -> Optional[rsa.RSAPrivateKey]:
         return self.__private_key
 
     def reset_private_key(self) -> None:

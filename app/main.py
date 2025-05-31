@@ -66,7 +66,7 @@ class MainIU(QMainWindow):
         pen_drives = self.detector.find_all_pen_drives()
 
         if len(pen_drives) != 0:
-            if self.private_key.get_private_key() is None:
+            if self.private_key.value is None:
                 self.add_log("Pendrive has been detected")
 
                 pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
@@ -76,18 +76,16 @@ class MainIU(QMainWindow):
                     self.private_key.reset_private_key()
 
                 if pen_drive is not None:
-                    if self.private_key.get_private_key() is None:
+                    if self.private_key.value is None:
                         self.add_log("Private key has been found")
 
                         dlg = PasswordDialog()
                         if dlg.exec() == QDialog.DialogCode.Accepted:
-                            password = dlg.get_password()
-                            print(password)
+                            password = dlg.password
                             self.private_key.load_private_key(
                                 self.detector.get_private_key_path(pen_drive), password
                             )
 
-                        print(self.private_key.get_private_key())
         else:
             self.add_log("Pendrive has not been detected")
             self.private_key.reset_private_key()
