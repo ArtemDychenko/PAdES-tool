@@ -3,7 +3,8 @@ from typing import Optional
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from .singleton_meta import SingletonMeta
-
+import logging
+logger = logging.getLogger(__name__)
 
 class PublicKey(metaclass=SingletonMeta):
     """
@@ -23,9 +24,9 @@ class PublicKey(metaclass=SingletonMeta):
         with open(public_key_path, "rb") as f:
             try:
                 self.__public_key = serialization.load_pem_public_key(f.read())
-                print("Public key was loaded")
+                logger.info("Public key was loaded")
             except ValueError:
-                print("Wrong file")
+                logger.error("Wrong file")
 
     @property
     def value(self) -> Optional[rsa.RSAPublicKey]:

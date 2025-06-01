@@ -14,7 +14,12 @@ from PyQt6.uic import loadUi
 
 from keys_loading import PrivateKey, PublicKey, PasswordDialog
 from pendrive_detection import PenDriveFinder
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s - %(message)s'
+)
 
 class MainIU(QMainWindow):
     def __init__(self):
@@ -65,30 +70,30 @@ class MainIU(QMainWindow):
     def check_pendrive(self) -> None:
         pen_drives = self.detector.find_all_pen_drives()
 
-        if len(pen_drives) != 0:
-            if self.private_key.value is None:
-                self.add_log("Pendrive has been detected")
-
-                pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
-
-                if pen_drive is None:
-                    self.add_log("Private key has not been found")
-                    self.private_key.reset_private_key()
-
-                if pen_drive is not None:
-                    if self.private_key.value is None:
-                        self.add_log("Private key has been found")
-
-                        dlg = PasswordDialog()
-                        if dlg.exec() == QDialog.DialogCode.Accepted:
-                            password = dlg.password
-                            self.private_key.load_private_key(
-                                self.detector.get_private_key_path(pen_drive), password
-                            )
-
-        else:
+        if not pen_drives:
             self.add_log("Pendrive has not been detected")
             self.private_key.reset_private_key()
+            return
+
+        if self.private_key.value is not None:
+            return
+
+        self.add_log("Pendrive has been detected")
+
+        pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
+        if pen_drive is None:
+            self.add_log("Private key has not been found")
+            self.private_key.reset_private_key()
+            return
+
+        self.add_log("Private key has been found")
+
+        dlg = PasswordDialog()
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            password = dlg.password
+            self.private_key.load_private_key(
+                self.detector.get_private_key_path(pen_drive), password
+            )
 
 
 def choose_file(self, name_filter: str) -> Optional[str]:
