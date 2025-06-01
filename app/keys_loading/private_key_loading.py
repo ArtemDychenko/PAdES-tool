@@ -5,7 +5,9 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from .singleton_meta import SingletonMeta
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class PrivateKey(metaclass=SingletonMeta):
     """
