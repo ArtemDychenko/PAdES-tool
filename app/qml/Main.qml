@@ -56,12 +56,6 @@ ApplicationWindow {
             }
         }
 
-        Button {
-            text: "Select PDF File"
-            Layout.fillWidth: true
-            onClicked: selectPdf()
-        }
-
         Label {
             id: selectedPdfLabel
             text: "No PDF file selected"
@@ -70,9 +64,11 @@ ApplicationWindow {
         }
 
         Button {
-            text: "Select Verification Key"
+            text: pdfFileLoaded ? "Cancel" : "Select PDF File"
             Layout.fillWidth: true
-            onClicked: selectPublicKey()
+            onClicked: selectPdf() 
+            Material.background: pdfFileLoaded ? Material.Red : Material.Gray
+            Material.foreground: pdfFileLoaded ? "white" : "black"
         }
 
         Label {
@@ -80,6 +76,14 @@ ApplicationWindow {
             text: "No key selected"
             wrapMode: Text.Wrap
             Layout.fillWidth: true
+        }
+
+        Button {
+            text: publicKeyLoaded ? "Cancel" : "Select Verification Key"
+            Layout.fillWidth: true
+            onClicked: selectPublicKey()
+            Material.background: publicKeyLoaded ? Material.Red : Material.Gray
+            Material.foreground: publicKeyLoaded ? "white" : "black"
         }
 
         RowLayout {
@@ -103,7 +107,7 @@ ApplicationWindow {
                 }
 
                 ToolTip.visible: !signButton.enabled && signTipArea.containsMouse
-                ToolTip.text: privateKeyLoaded
+                ToolTip.text: !privateKeyLoaded
                             ? "Connect a USB device to enable signing"
                             : "Select a PDF file to enable signing"
 
@@ -133,7 +137,7 @@ ApplicationWindow {
                 ToolTip.visible: !verifyButton.enabled && verifyTipArea.containsMouse
                 ToolTip.text: publicKeyLoaded
                             ? "Select a PDF file to enable verification"
-                            : "Select a public key to enable verification"
+                            : "Select a verification key"
 
                 MouseArea {
                     id: verifyTipArea

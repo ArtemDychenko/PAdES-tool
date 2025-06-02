@@ -41,17 +41,25 @@ class Backend(QObject):
 
     @pyqtSlot()
     def handle_select_pdf(self):
+        if self.root.property("pdfFileLoaded"):
+            self.root.setProperty("pdfFileLoaded", False)
+            self.root.setPdfFile("No PDF file selected")
+            return
         file_path = choose_file("Select PDF File", "PDF files (*.pdf)")
         if file_path:
-            self.root.setPdfFile(file_path)
+            self.root.setPdfFile("PDF file: " + file_path)
             self.root.append_log(f"Selected PDF: {file_path}")
             self.root.setProperty("pdfFileLoaded", True)
 
     @pyqtSlot()
     def select_public_key(self):
+        if self.root.property("publicKeyLoaded"):
+            self.root.setProperty("publicKeyLoaded", False)
+            self.root.setPublicKeyFile("No Public Key file selected")
+            return
         file_path = choose_file("Select Public Key File", "Public key files (*.pem)")
         if file_path:
-            self.root.setPublicKeyFile(file_path)
+            self.root.setPublicKeyFile("Verification key: " + file_path)
             self.root.append_log(f"Selected Public Key: {file_path}")
             self.root.setProperty("publicKeyLoaded", True)
 
@@ -75,7 +83,7 @@ class Backend(QObject):
             return
 
         self.root.setProperty("usbConnected", True)
-        self.root.append_log("Pendrive has been detected")
+        self.root.append_log("USB device has been detected")
 
         pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
         if pen_drive is None:
@@ -89,11 +97,14 @@ class Backend(QObject):
         dlg = PasswordDialog()
         if dlg.exec() == QDialog.DialogCode.Accepted:
             password = dlg.password
-            if self.private_key.load_private_key(
-                self.detector.get_private_key_path(pen_drive), password
-            ):
-                self.root.append_log("Private key has been loaded successfully")
-                self.root.setProperty("privateKeyLoaded", True)
+            try:
+                if self.private_key.load_private_key(
+                    self.detector.get_private_key_path(pen_drive), password
+                ):
+                    self.root.append_log("Private key has been loaded successfully")
+                    self.root.setProperty("privateKeyLoaded", True)
+            except FileNotFoundError:
+                self.root.append_log("USB drive has been removed unexpectedly or private key file was deleted")
 
 
 def main():
@@ -117,7 +128,6 @@ def main():
     # Log boot messages
     root.append_log("Application started...")
     root.append_log("Detecting USB devices...")
-    root.append_log("USB device detected!")
 
     sys.exit(app.exec())
 
