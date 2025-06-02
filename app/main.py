@@ -45,6 +45,7 @@ class Backend(QObject):
         if file_path:
             self.root.setPdfFile(file_path)
             self.root.append_log(f"Selected PDF: {file_path}")
+            self.root.setProperty("pdfFileLoaded", True)
 
     @pyqtSlot()
     def select_public_key(self):
@@ -52,6 +53,7 @@ class Backend(QObject):
         if file_path:
             self.root.setPublicKeyFile(file_path)
             self.root.append_log(f"Selected Public Key: {file_path}")
+            self.root.setProperty("publicKeyLoaded", True)
 
     @pyqtSlot()
     def handle_sign_pdf(self):
@@ -65,19 +67,21 @@ class Backend(QObject):
         pen_drives = self.detector.find_all_pen_drives()
 
         if not pen_drives:
-            self.root.append_log("Pendrive has not been detected")
             self.private_key.reset_private_key()
+            self.root.setProperty("privateKeyLoaded", False)
+            self.root.setProperty("usbConnected", False)
             return
-
         if self.private_key.value is not None:
             return
 
+        self.root.setProperty("usbConnected", True)
         self.root.append_log("Pendrive has been detected")
 
         pen_drive = self.detector.find_pen_drive_with_private_key(pen_drives)
         if pen_drive is None:
             self.root.append_log("Private key has not been found")
             self.private_key.reset_private_key()
+            self.root.setProperty("privateKeyLoaded", False)
             return
 
         self.root.append_log("Private key has been found")
@@ -85,9 +89,11 @@ class Backend(QObject):
         dlg = PasswordDialog()
         if dlg.exec() == QDialog.DialogCode.Accepted:
             password = dlg.password
-            self.private_key.load_private_key(
+            if self.private_key.load_private_key(
                 self.detector.get_private_key_path(pen_drive), password
-            )
+            ):
+                self.root.append_log("Private key has been loaded successfully")
+                self.root.setProperty("privateKeyLoaded", True)
 
 
 def main():
@@ -118,7 +124,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # app = QApplication(sys.argv)
-    # ui = MainIU()
-    # ui.show()
-    # app.exec()

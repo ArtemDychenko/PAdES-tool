@@ -16,6 +16,11 @@ ApplicationWindow {
     signal signPdf()
     signal verifyPdf()
 
+    property bool usbConnected: false
+    property bool privateKeyLoaded: false
+    property bool publicKeyLoaded: false
+    property bool pdfFileLoaded: false
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 24
@@ -28,11 +33,27 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        ComboBox {
-            id: usbComboBox
+        RowLayout {
             Layout.fillWidth: true
-            model: ["Select USB device", "USB Device 1", "USB Device 2"]
-            currentIndex: 0
+            spacing: 10
+
+            Rectangle {
+                id: privateKeyIndicator
+                width: 16
+                height: 16
+                radius: 8
+                color: (privateKeyLoaded & usbConnected) ? "green" : (usbConnected ? "blue" : "red")
+                border.color: "#444"
+                border.width: 1
+            }
+
+            Label {
+                text: (privateKeyLoaded & usbConnected) ? "Signing key loaded" : 
+                    (usbConnected ? "USB connected. Loading  signing key..." : 
+                    "Signing key not loaded. Connect USB device with the key.")
+                font.pixelSize: 14
+                color: "#333"
+            }
         }
 
         Button {
@@ -75,16 +96,15 @@ ApplicationWindow {
                     id: signButton
                     text: "Sign PDF"
                     anchors.fill: parent
-                    enabled: usbComboBox.currentIndex > 0 &&
-                            selectedPdfLabel.text !== "No PDF file selected"
+                    enabled: privateKeyLoaded && pdfFileLoaded
                     Material.background: Material.Teal
                     Material.foreground: "white"
                     onClicked: signPdf()
                 }
 
                 ToolTip.visible: !signButton.enabled && signTipArea.containsMouse
-                ToolTip.text: usbComboBox.currentIndex === 0
-                            ? "Select a USB device to enable signing"
+                ToolTip.text: privateKeyLoaded
+                            ? "Connect a USB device to enable signing"
                             : "Select a PDF file to enable signing"
 
                 MouseArea {
@@ -104,15 +124,14 @@ ApplicationWindow {
                     id: verifyButton
                     text: "Verify Signature"
                     anchors.fill: parent
-                    enabled: selectedPdfLabel.text !== "No PDF file selected" &&
-                            selectedKeyLabel.text !== "No key selected"
+                    enabled: pdfFileLoaded && publicKeyLoaded
                     Material.background: Material.Blue
                     Material.foreground: "white"
                     onClicked: verifyPdf()
                 }
 
                 ToolTip.visible: !verifyButton.enabled && verifyTipArea.containsMouse
-                ToolTip.text: selectedPdfLabel.text === "No PDF file selected"
+                ToolTip.text: publicKeyLoaded
                             ? "Select a PDF file to enable verification"
                             : "Select a public key to enable verification"
 
@@ -150,7 +169,7 @@ ApplicationWindow {
         selectedPdfLabel.text = path
     }
 
-    function setKeyFile(path) {
+    function setPublicKeyFile(path) {
         selectedKeyLabel.text = path
     }
 
