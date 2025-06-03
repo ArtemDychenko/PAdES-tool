@@ -115,6 +115,7 @@ ApplicationWindow {
                     id: signTipArea
                     anchors.fill: parent
                     hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
                 }
             }
 
@@ -143,6 +144,7 @@ ApplicationWindow {
                     id: verifyTipArea
                     anchors.fill: parent
                     hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
                 }
             }
         }
