@@ -39,14 +39,18 @@ class Backend(QObject):
         self.timer.timeout.connect(self.check_pendrive)
         self.timer.start(1000)
 
+        self.selected_pdf: Optional[str] = None
+
     @pyqtSlot()
     def handle_select_pdf(self):
         if self.root.property("pdfFileLoaded"):
+            self.selected_pdf = None
             self.root.setProperty("pdfFileLoaded", False)
             self.root.setPdfFile("No PDF file selected")
             return
         file_path = choose_file("Select PDF File", "PDF files (*.pdf)")
         if file_path:
+            self.selected_pdf = file_path
             self.root.setPdfFile("PDF file: " + file_path)
             self.root.append_log(f"Selected PDF: {file_path}")
             self.root.setProperty("pdfFileLoaded", True)
@@ -54,11 +58,13 @@ class Backend(QObject):
     @pyqtSlot()
     def select_public_key(self):
         if self.root.property("publicKeyLoaded"):
+            self.public_key.reset_public_key()
             self.root.setProperty("publicKeyLoaded", False)
             self.root.setPublicKeyFile("No Public Key file selected")
             return
+
         file_path = choose_file("Select Public Key File", "Public key files (*.pem)")
-        if file_path:
+        if file_path and self.public_key.load_public_key(file_path):
             self.root.setPublicKeyFile("Verification key: " + file_path)
             self.root.append_log(f"Selected Public Key: {file_path}")
             self.root.setProperty("publicKeyLoaded", True)
@@ -104,7 +110,9 @@ class Backend(QObject):
                     self.root.append_log("Private key has been loaded successfully")
                     self.root.setProperty("privateKeyLoaded", True)
             except FileNotFoundError:
-                self.root.append_log("USB drive has been removed unexpectedly or private key file was deleted")
+                self.root.append_log(
+                    "USB drive has been removed unexpectedly or private key file was deleted"
+                )
 
 
 def main():
