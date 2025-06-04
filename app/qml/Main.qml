@@ -42,13 +42,13 @@ ApplicationWindow {
                 width: 16
                 height: 16
                 radius: 8
-                color: (privateKeyLoaded & usbConnected) ? "green" : (usbConnected ? "blue" : "red")
+                color: (privateKeyLoaded && usbConnected) ? "green" : (usbConnected ? "blue" : "red")
                 border.color: "#444"
                 border.width: 1
             }
 
             Label {
-                text: (privateKeyLoaded & usbConnected) ? "Signing key loaded" : 
+                text: (privateKeyLoaded && usbConnected) ? "Signing key loaded" : 
                     (usbConnected ? "USB connected. Loading  signing key..." : 
                     "Signing key not loaded. Connect USB device with the key.")
                 font.pixelSize: 14
