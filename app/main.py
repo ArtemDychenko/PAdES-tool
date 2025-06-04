@@ -56,7 +56,7 @@ class Backend(QObject):
             self.root.setProperty("pdfFileLoaded", True)
 
     @pyqtSlot()
-    def select_public_key(self):
+    def handle_select_public_key(self):
         if self.root.property("publicKeyLoaded"):
             self.public_key.reset_public_key()
             self.root.setProperty("publicKeyLoaded", False)
@@ -129,7 +129,7 @@ def main():
 
     # Connect QML signals to Python slots
     root.selectPdf.connect(backend.handle_select_pdf)
-    root.selectPublicKey.connect(backend.select_public_key)
+    root.selectPublicKey.connect(backend.handle_select_public_key)
     root.signPdf.connect(backend.handle_sign_pdf)
     root.verifyPdf.connect(backend.handle_verify_pdf)
 
