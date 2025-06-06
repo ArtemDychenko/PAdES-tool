@@ -10,9 +10,12 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtQml import QQmlApplicationEngine
 from PyQt6.QtCore import QObject, pyqtSlot
+from PyQt6.QtWidgets import QMessageBox
 
 from keys_loading import PrivateKey, PublicKey, PasswordDialog
 from pendrive_detection import PenDriveFinder
+from pdf.pdf_signer import PDFSigner
+from pdf.pdf_verifier import PDFVerifier
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -40,6 +43,14 @@ class Backend(QObject):
         self.timer.start(1000)
 
         self.selected_pdf: Optional[str] = None
+    
+    def _show_message_dialog(self, title: str, message: str, icon=QMessageBox.Icon.Information):
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setIcon(icon)
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg_box.exec()
 
     @pyqtSlot()
     def handle_select_pdf(self):
@@ -71,7 +82,19 @@ class Backend(QObject):
 
     @pyqtSlot()
     def handle_sign_pdf(self):
-        self.root.append_log("PDF has been signed")
+        if self.private_key.value is None or self.selected_pdf is None:
+            return
+        pdf_signer = PDFSigner(self.private_key.value)
+        try:
+            pdf_signer.sign(self.selected_pdf)
+            self.root.append_log(f"PDF signed successfully: {self.selected_pdf}")
+            self._show_message_dialog(
+                "Success", f"PDF signed successfully: {self.selected_pdf}",
+                QMessageBox.Icon.NoIcon
+            )
+        except Exception as e:
+            self.root.append_log(f"Error signing PDF: {str(e)}")
+            self._show_message_dialog("Error", f"Failed to sign PDF: {str(e)}", QMessageBox.Icon.Critical)
 
     @pyqtSlot()
     def handle_verify_pdf(self):
