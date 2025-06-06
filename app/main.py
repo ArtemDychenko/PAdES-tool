@@ -84,6 +84,7 @@ class Backend(QObject):
     def handle_sign_pdf(self):
         if self.private_key.value is None or self.selected_pdf is None:
             return
+        self.root.setProperty("signingInProgress", True)
         pdf_signer = PDFSigner(self.private_key.value)
         try:
             pdf_signer.sign(self.selected_pdf)
@@ -95,10 +96,35 @@ class Backend(QObject):
         except Exception as e:
             self.root.append_log(f"Error signing PDF: {str(e)}")
             self._show_message_dialog("Error", f"Failed to sign PDF: {str(e)}", QMessageBox.Icon.Critical)
+        finally:
+            self.root.setProperty("signingInProgress", False)
 
     @pyqtSlot()
     def handle_verify_pdf(self):
-        self.root.append_log("PDF has been verified")
+        if self.public_key.value is None or self.selected_pdf is None:
+            return
+        self.root.setProperty("verificationInProgress", True)
+        pdf_verifier = PDFVerifier(self.public_key.value)
+        try:
+            if pdf_verifier.verify(self.selected_pdf):
+                self.root.append_log(f"PDF verified successfully: {self.selected_pdf}")
+                self._show_message_dialog(
+                    "Success", f"PDF verified successfully: {self.selected_pdf}",
+                    QMessageBox.Icon.NoIcon
+                )
+            else:
+                self.root.append_log(f"PDF verification failed: {self.selected_pdf}")
+                self._show_message_dialog(
+                    "Error", f"PDF verification failed: {self.selected_pdf}",
+                    QMessageBox.Icon.Critical
+                )
+        except Exception as e:
+            self.root.append_log(f"Error verifying PDF: {str(e)}")
+            self._show_message_dialog(
+                "Error", f"Failed to verify PDF: {str(e)}", QMessageBox.Icon.Critical
+            ) 
+        finally:
+            self.root.setProperty("verificationInProgress", False)
 
     def check_pendrive(self) -> None:
         pen_drives = self.detector.find_all_pen_drives()
