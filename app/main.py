@@ -43,8 +43,10 @@ class Backend(QObject):
         self.timer.start(1000)
 
         self.selected_pdf: Optional[str] = None
-    
-    def _show_message_dialog(self, title: str, message: str, icon=QMessageBox.Icon.Information):
+
+    def _show_message_dialog(
+        self, title: str, message: str, icon=QMessageBox.Icon.Information
+    ):
         msg_box = QMessageBox()
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
@@ -90,12 +92,15 @@ class Backend(QObject):
             pdf_signer.sign(self.selected_pdf)
             self.root.append_log(f"PDF signed successfully: {self.selected_pdf}")
             self._show_message_dialog(
-                "Success", f"PDF signed successfully: {self.selected_pdf}",
-                QMessageBox.Icon.NoIcon
+                "Success",
+                f"PDF signed successfully: {self.selected_pdf}",
+                QMessageBox.Icon.NoIcon,
             )
         except Exception as e:
             self.root.append_log(f"Error signing PDF: {str(e)}")
-            self._show_message_dialog("Error", f"Failed to sign PDF: {str(e)}", QMessageBox.Icon.Critical)
+            self._show_message_dialog(
+                "Error", f"Failed to sign PDF: {str(e)}", QMessageBox.Icon.Critical
+            )
         finally:
             self.root.setProperty("signingInProgress", False)
 
@@ -109,20 +114,22 @@ class Backend(QObject):
             if pdf_verifier.verify(self.selected_pdf):
                 self.root.append_log(f"PDF verified successfully: {self.selected_pdf}")
                 self._show_message_dialog(
-                    "Success", f"PDF verified successfully: {self.selected_pdf}",
-                    QMessageBox.Icon.NoIcon
+                    "Success",
+                    f"PDF verified successfully: {self.selected_pdf}",
+                    QMessageBox.Icon.NoIcon,
                 )
             else:
                 self.root.append_log(f"PDF verification failed: {self.selected_pdf}")
                 self._show_message_dialog(
-                    "Error", f"PDF verification failed: {self.selected_pdf}",
-                    QMessageBox.Icon.Critical
+                    "Error",
+                    f"PDF verification failed: {self.selected_pdf}",
+                    QMessageBox.Icon.Critical,
                 )
         except Exception as e:
             self.root.append_log(f"Error verifying PDF: {str(e)}")
             self._show_message_dialog(
                 "Error", f"Failed to verify PDF: {str(e)}", QMessageBox.Icon.Critical
-            ) 
+            )
         finally:
             self.root.setProperty("verificationInProgress", False)
 
