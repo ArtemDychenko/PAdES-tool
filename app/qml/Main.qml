@@ -20,6 +20,8 @@ ApplicationWindow {
     property bool privateKeyLoaded: false
     property bool publicKeyLoaded: false
     property bool pdfFileLoaded: false
+    property bool signingInProgress: false
+    property bool verificationInProgress: false
 
     ColumnLayout {
         anchors.fill: parent
@@ -98,9 +100,9 @@ ApplicationWindow {
 
                 Button {
                     id: signButton
-                    text: "Sign PDF"
+                    text: signingInProgress ? "Signing..." : "Sign PDF"
                     anchors.fill: parent
-                    enabled: privateKeyLoaded && pdfFileLoaded
+                    enabled: privateKeyLoaded && pdfFileLoaded && !signingInProgress
                     Material.background: Material.Teal
                     Material.foreground: "white"
                     onClicked: signPdf()
@@ -127,9 +129,9 @@ ApplicationWindow {
 
                 Button {
                     id: verifyButton
-                    text: "Verify Signature"
+                    text: verificationInProgress ? "Verifying..." : "Verify Signature"
                     anchors.fill: parent
-                    enabled: pdfFileLoaded && publicKeyLoaded
+                    enabled: pdfFileLoaded && publicKeyLoaded && !verificationInProgress
                     Material.background: Material.Blue
                     Material.foreground: "white"
                     onClicked: verifyPdf()
